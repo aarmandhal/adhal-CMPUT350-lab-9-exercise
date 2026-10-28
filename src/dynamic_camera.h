@@ -37,10 +37,10 @@ struct DynamicCamera {
                 const sf::Vector2f& trackedPosWorld,      // world coords of player to track
                 const sf::Vector2f& trackedVelocityWorld  // world velocity of player to track
     ) {
-        // Sync the camera's unadjusted center to this struct's unadjusted center
+        // Reset camera to last frame's unadjusted center
         camera.setCameraCenter(cameraUnadjustedCenter);
 
-        // Get player's x position in window coordinates
+        // Get player's x position as a percentage of window width
         float playerPercentX = camera.worldToWindowPercent(trackedPosWorld).x;
 
         // Get direction of player's velocity
@@ -64,7 +64,7 @@ struct DynamicCamera {
         // Calculate new unadjusted x position
         float newUnadjustedX = cameraUnadjustedCenter.x;
 
-        // Check dead zone
+        // Determine which zone the player's in and adjust the unadjusted camera center accordingly
         if (deadZoneX.contains(playerPercentX)) {
             // dead zone: no change
         } else if (softZoneX.contains(playerPercentX)) {
@@ -84,6 +84,7 @@ struct DynamicCamera {
 
         // Update camera center with lookahead state
         camera.setCameraCenter({newUnadjustedX + lookaheadState, cameraUnadjustedCenter.y});
+        // Store the unadjusted center for the next frame
         cameraUnadjustedCenter = {newUnadjustedX, cameraUnadjustedCenter.y};
     }
 
